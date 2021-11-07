@@ -27,16 +27,37 @@ $sepatu = array(
   ],
 );
 
-// if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-// }
-
-// KAMANA AJICCCCCCCC
-
-function calculateDiscount()
+/**
+ * Barang >= 3 && Total Belanja >= 500.000
+ * > Discount 30%
+ * Barang < 3 && Total Belanja >=  500.000
+ * > Discount 20%
+ * Barang < 3 && Total Belanja < 500.000
+ * > Discount null
+ */
+function calculateDiscount($products)
 {
+  $total = 0;
+  $output = 0;
+
+  foreach ($products as $value) {
+    $total += $value;
+  }
+
+  if (count($products) >= 3 && $total >= 500000) {
+    $output = $total - ($total * 0.30);
+    return header("Location: diskon.php?total={$output}");
+  } else if (count($products) < 3 && $total >= 500000) {
+    $output = $total - ($total * 0.20);
+    return header("Location: diskon.php?total={$output}");
+  } else {
+    return header("Location: diskon.php?total={$total}");
+  }
 }
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  calculateDiscount($_POST['product']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +71,7 @@ function calculateDiscount()
 </head>
 
 <body>
-  <?= var_dump($_POST['product']) ?? '' ?>
+  Total : <?= $_GET['total'] ?? '' ?>
   <form action="" method="POST">
     <?php
     foreach ($sepatu as $s) {
